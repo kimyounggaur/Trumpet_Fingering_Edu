@@ -1,6 +1,7 @@
 node_modules/
 app/node_modules/
 .vercel/
+dist/
 
 tmp/
 scripts/__pycache__/

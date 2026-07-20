@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import * as esbuild from 'esbuild';
@@ -74,5 +74,19 @@ if (bytes > limit) {
   throw new Error(`최종 HTML ${bytes} bytes가 350KB 제한 ${limit} bytes를 초과했습니다.`);
 }
 
-await writeFile(path.join(appDir, 'index.html'), html, 'utf8');
-console.log(JSON.stringify({ output: 'app/index.html', bytes, limit, withinBudget: true }, null, 2));
+const appOutput = path.join(appDir, 'index.html');
+const distDir = path.resolve(appDir, '..', 'dist');
+const distOutput = path.join(distDir, 'index.html');
+await mkdir(distDir, { recursive: true });
+await Promise.all([
+  writeFile(appOutput, html, 'utf8'),
+  writeFile(distOutput, html, 'utf8')
+]);
+
+console.log(JSON.stringify({
+  output: 'app/index.html',
+  deploymentOutput: 'dist/index.html',
+  bytes,
+  limit,
+  withinBudget: true
+}, null, 2));
