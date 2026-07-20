@@ -1,0 +1,17 @@
+{
+  "name": "trumpet-fingering-animation-mobile-webapp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-single-file.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:e2e": "node tests/e2e/app.spec.mjs",
+    "validate": "node scripts/validate-app.mjs",
+    "qa": "npm run build && npm test && npm run test:e2e && npm run validate"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.1",
+    "playwright": "1.61.1"
+  }
+}

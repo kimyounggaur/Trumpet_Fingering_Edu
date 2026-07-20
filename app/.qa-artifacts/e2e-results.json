@@ -1,0 +1,259 @@
+{
+  "browser": {
+    "name": "chromium",
+    "version": "150.0.7871.128",
+    "platform": "win32",
+    "arch": "x64"
+  },
+  "fileMode": {
+    "documentRequests": 1,
+    "subresourceRequests": 0,
+    "externalRequests": 0
+  },
+  "staticServer": {
+    "serverRequests": [
+      "/index.html"
+    ],
+    "documentRequests": 1,
+    "subresourceRequests": 0
+  },
+  "initial": {
+    "note": "C4",
+    "pose": "000",
+    "audioContextCreatedBeforeActivation": false
+  },
+  "shortcuts": {
+    "control2": "D4/101",
+    "alt3": "inactive-state-preserved",
+    "shift7": "B5/010",
+    "defaultPrevented": {
+      "control2": true,
+      "alt3": true,
+      "shift7": true
+    },
+    "browserReservedFallback": "screen category buttons verified by pose matrix"
+  },
+  "modes": {
+    "scale": "ascending-8-of-8-complete",
+    "numberQuiz": "answer-hidden-then-revealed",
+    "numberQuizTenQuestions": "complete-and-new-session-reset",
+    "valveQuiz": "first-wrong-target-still-hidden",
+    "valveQuizTenQuestions": "complete-and-new-session-reset"
+  },
+  "accessibility": {
+    "visibleButtonsWithNames": true,
+    "settingsDialogLabelled": true,
+    "globalShortcutsExcludedWhileDialogOpen": true,
+    "quizAnswerLabelsNeutral": true,
+    "forcedColorsRendered": true,
+    "reducedMotionSnaps": true
+  },
+  "poses": {
+    "100": {
+      "gapsScreenPx": {
+        "1": 0.00024461699740419614,
+        "2": 0.00004825252777356536,
+        "3": 0.000030517578125
+      },
+      "maximumGap": 0.00024461699740419614,
+      "screenshot": ".qa-artifacts\\poses\\pose-100-390x844.png"
+    },
+    "101": {
+      "gapsScreenPx": {
+        "1": 0.00006291359902370698,
+        "2": 0.00003411968959808029,
+        "3": 0.0002899169921875
+      },
+      "maximumGap": 0.0002899169921875,
+      "screenshot": ".qa-artifacts\\poses\\pose-101-390x844.png"
+    },
+    "110": {
+      "gapsScreenPx": {
+        "1": 0.00015728399755926745,
+        "2": 0.00024944736822924524,
+        "3": 0.000030517578125
+      },
+      "maximumGap": 0.00024944736822924524,
+      "screenshot": ".qa-artifacts\\poses\\pose-110-390x844.png"
+    },
+    "111": {
+      "gapsScreenPx": {
+        "1": 0.00017059844799040142,
+        "2": 0.00009650505554713072,
+        "3": 0.00003411968959808029
+      },
+      "maximumGap": 0.00017059844799040142,
+      "screenshot": ".qa-artifacts\\poses\\pose-111-390x844.png"
+    },
+    "000": {
+      "gapsScreenPx": {
+        "1": 0.000017059844799040144,
+        "2": 0.0001406790841261732,
+        "3": 0.000030517578125
+      },
+      "maximumGap": 0.0001406790841261732,
+      "screenshot": ".qa-artifacts\\poses\\pose-000-390x844.png"
+    },
+    "010": {
+      "gapsScreenPx": {
+        "1": 0.000017059844799040144,
+        "2": 0.000335693359375,
+        "3": 0.000030517578125
+      },
+      "maximumGap": 0.000335693359375,
+      "screenshot": ".qa-artifacts\\poses\\pose-010-390x844.png"
+    },
+    "001": {
+      "gapsScreenPx": {
+        "1": 0.00003411968959808029,
+        "2": 0.00003411968959808029,
+        "3": 0.0003370776677608417
+      },
+      "maximumGap": 0.0003370776677608417,
+      "screenshot": ".qa-artifacts\\poses\\pose-001-390x844.png"
+    },
+    "011": {
+      "gapsScreenPx": {
+        "1": 0.00003411968959808029,
+        "2": 0.00031861286953462374,
+        "3": 0.00003411968959808029
+      },
+      "maximumGap": 0.00031861286953462374,
+      "screenshot": ".qa-artifacts\\poses\\pose-011-390x844.png"
+    }
+  },
+  "viewports": {
+    "320x568": {
+      "innerWidth": 320,
+      "scrollWidth": 320,
+      "sceneLeft": 21,
+      "sceneRight": 299,
+      "note": "D4",
+      "pose": "101",
+      "screenshot": ".qa-artifacts\\viewports\\viewport-320x568.png"
+    },
+    "360x740": {
+      "innerWidth": 360,
+      "scrollWidth": 360,
+      "sceneLeft": 21,
+      "sceneRight": 339,
+      "note": "D4",
+      "pose": "101",
+      "screenshot": ".qa-artifacts\\viewports\\viewport-360x740.png"
+    },
+    "390x844": {
+      "innerWidth": 390,
+      "scrollWidth": 390,
+      "sceneLeft": 21,
+      "sceneRight": 369,
+      "note": "D4",
+      "pose": "101",
+      "screenshot": ".qa-artifacts\\viewports\\viewport-390x844.png"
+    },
+    "430x932": {
+      "innerWidth": 430,
+      "scrollWidth": 430,
+      "sceneLeft": 21,
+      "sceneRight": 409,
+      "note": "D4",
+      "pose": "101",
+      "screenshot": ".qa-artifacts\\viewports\\viewport-430x932.png"
+    },
+    "768x1024": {
+      "innerWidth": 768,
+      "scrollWidth": 768,
+      "sceneLeft": 43,
+      "sceneRight": 725,
+      "note": "D4",
+      "pose": "101",
+      "screenshot": ".qa-artifacts\\viewports\\viewport-768x1024.png"
+    },
+    "844x390": {
+      "innerWidth": 844,
+      "scrollWidth": 844,
+      "sceneLeft": 43,
+      "sceneRight": 801,
+      "note": "D4",
+      "pose": "101",
+      "screenshot": ".qa-artifacts\\viewports\\viewport-844x390.png"
+    },
+    "1280x800": {
+      "innerWidth": 1280,
+      "scrollWidth": 1280,
+      "sceneLeft": 93,
+      "sceneRight": 805.734375,
+      "note": "D4",
+      "pose": "101",
+      "screenshot": ".qa-artifacts\\viewports\\viewport-1280x800.png"
+    },
+    "1440x900": {
+      "innerWidth": 1440,
+      "scrollWidth": 1440,
+      "sceneLeft": 173,
+      "sceneRight": 885.734375,
+      "note": "D4",
+      "pose": "101",
+      "screenshot": ".qa-artifacts\\viewports\\viewport-1440x900.png"
+    }
+  },
+  "touch": {
+    "oneTapOneSelection": true,
+    "latencyMs": 43
+  },
+  "performance": {
+    "samples": [
+      {
+        "durationMs": 10013,
+        "transitions": 41,
+        "frames": 1394,
+        "averageFps": 139.32476462710133,
+        "p95IntervalMs": 7.200000000000728,
+        "maximumIntervalMs": 14.200000000000728,
+        "longTasksOver50Ms": 0
+      },
+      {
+        "durationMs": 10004.900000035763,
+        "transitions": 41,
+        "frames": 1394,
+        "averageFps": 139.42509651737316,
+        "p95IntervalMs": 7.200000000004366,
+        "maximumIntervalMs": 14.099999999998545,
+        "longTasksOver50Ms": 0
+      },
+      {
+        "durationMs": 10007.300000011921,
+        "transitions": 41,
+        "frames": 1394,
+        "averageFps": 139.3261571367176,
+        "p95IntervalMs": 7.200000000004366,
+        "maximumIntervalMs": 14,
+        "longTasksOver50Ms": 0
+      }
+    ],
+    "medianAverageFps": 139.3261571367176,
+    "medianP95IntervalMs": 7.200000000004366,
+    "medianLongTasksOver50Ms": 0,
+    "viewport": "390x844",
+    "runs": 3,
+    "durationPerRunSeconds": 10,
+    "inputToLogicalMs": 0.699999988079071,
+    "inputToFirstVisualMs": 8.400000035762787,
+    "sceneNodes": 167,
+    "movingTopLevelNodes": 5
+  },
+  "console": {
+    "errors": [],
+    "warnings": [],
+    "pageErrors": []
+  },
+  "audio": {
+    "contexts": 1,
+    "oscillators": 2,
+    "gains": 2,
+    "filters": 1,
+    "oscillatorStarts": 2,
+    "gainRamps": 5,
+    "lazyContext": true,
+    "voiceReusedAcrossTwoNotes": true
+  }
+}
