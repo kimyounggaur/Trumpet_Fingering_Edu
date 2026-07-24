@@ -47,6 +47,8 @@ export function createInitialState(overrides = {}) {
     selectedAlt: null,
     pitchMode: 'written',
     soundOn: true,
+    soundTimbre: 'concert',
+    soundDynamics: 'natural',
     hapticOn: true,
     slideMotionOn: false,
     motionPreference: 'system',
@@ -552,6 +554,8 @@ export function reducer(state = INITIAL_STATE, action = {}) {
       const validators = {
         pitchMode: (input) => input === 'written' || input === 'concert',
         soundOn: (input) => typeof input === 'boolean',
+        soundTimbre: (input) => ['concert', 'warm', 'mute'].includes(input),
+        soundDynamics: (input) => ['soft', 'natural', 'forte'].includes(input),
         hapticOn: (input) => typeof input === 'boolean',
         slideMotionOn: (input) => typeof input === 'boolean',
         motionPreference: (input) => input === 'system' || input === 'reduced',

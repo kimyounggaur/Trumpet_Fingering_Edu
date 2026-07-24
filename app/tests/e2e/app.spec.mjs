@@ -32,6 +32,7 @@ const result = {
   viewports: {},
   touch: {},
   performance: {},
+  audioSignal: {},
   console: { errors: [], warnings: [], pageErrors: [] },
 };
 
@@ -156,6 +157,12 @@ try {
       oscillators: 0,
       gains: 0,
       filters: 0,
+      bufferSources: 0,
+      buffers: 0,
+      periodicWaves: 0,
+      waveShapers: 0,
+      convolvers: 0,
+      compressors: 0,
       oscillatorStarts: 0,
       gainRamps: 0,
     };
@@ -167,6 +174,12 @@ try {
         const createOscillator = audioContext.createOscillator.bind(audioContext);
         const createGain = audioContext.createGain.bind(audioContext);
         const createBiquadFilter = audioContext.createBiquadFilter.bind(audioContext);
+        const createBufferSource = audioContext.createBufferSource?.bind(audioContext);
+        const createBuffer = audioContext.createBuffer?.bind(audioContext);
+        const createPeriodicWave = audioContext.createPeriodicWave?.bind(audioContext);
+        const createWaveShaper = audioContext.createWaveShaper?.bind(audioContext);
+        const createConvolver = audioContext.createConvolver?.bind(audioContext);
+        const createDynamicsCompressor = audioContext.createDynamicsCompressor?.bind(audioContext);
         audioContext.createOscillator = () => {
           const node = createOscillator();
           globalThis.__audioQa.oscillators += 1;
@@ -191,6 +204,42 @@ try {
           globalThis.__audioQa.filters += 1;
           return createBiquadFilter();
         };
+        if (createBufferSource) {
+          audioContext.createBufferSource = () => {
+            globalThis.__audioQa.bufferSources += 1;
+            return createBufferSource();
+          };
+        }
+        if (createBuffer) {
+          audioContext.createBuffer = (...args) => {
+            globalThis.__audioQa.buffers += 1;
+            return createBuffer(...args);
+          };
+        }
+        if (createPeriodicWave) {
+          audioContext.createPeriodicWave = (...args) => {
+            globalThis.__audioQa.periodicWaves += 1;
+            return createPeriodicWave(...args);
+          };
+        }
+        if (createWaveShaper) {
+          audioContext.createWaveShaper = () => {
+            globalThis.__audioQa.waveShapers += 1;
+            return createWaveShaper();
+          };
+        }
+        if (createConvolver) {
+          audioContext.createConvolver = () => {
+            globalThis.__audioQa.convolvers += 1;
+            return createConvolver();
+          };
+        }
+        if (createDynamicsCompressor) {
+          audioContext.createDynamicsCompressor = () => {
+            globalThis.__audioQa.compressors += 1;
+            return createDynamicsCompressor();
+          };
+        }
         return audioContext;
       },
     });
@@ -339,9 +388,28 @@ try {
   await page.locator('[data-mode="learn"]').click();
   await page.locator('#settings-open').click();
   assert.equal(await page.locator('#settings-dialog').getAttribute('aria-labelledby'), 'settings-title');
+  assert.equal(await page.locator('#setting-timbre option').count(), 3);
+  assert.equal(await page.locator('#setting-dynamics option').count(), 3);
+  await page.locator('#setting-timbre').selectOption('warm');
+  await page.locator('#setting-dynamics').selectOption('forte');
+  assert.match(await page.locator('#sound-profile-open').textContent(), /웜 브라스 · f/);
+  const storedSoundSettings = await page.evaluate(() => {
+    const saved = JSON.parse(localStorage.getItem('trumpet-fingering-settings-v1'));
+    return {
+      timbre: saved.values.soundTimbre,
+      dynamics: saved.values.soundDynamics,
+    };
+  });
+  assert.deepEqual(storedSoundSettings, { timbre: 'warm', dynamics: 'forte' });
   const dialogBefore = await page.locator('#note-name').textContent();
   await dispatchChord(page, 'Control', 4);
   assert.equal(await page.locator('#note-name').textContent(), dialogBefore);
+  await page.locator('#settings-dialog .dialog-close').click();
+  await page.locator('#sound-profile-open').click();
+  assert.equal(await page.locator('#settings-dialog').isVisible(), true);
+  assert.equal(await page.evaluate(() => document.activeElement?.id), 'setting-timbre');
+  await page.locator('#setting-timbre').selectOption('concert');
+  await page.locator('#setting-dynamics').selectOption('natural');
   await page.locator('#settings-dialog .dialog-close').click();
   const unnamedVisibleButtons = await page.locator('button:visible').evaluateAll(buttons => buttons.filter(button => {
     const label = button.getAttribute('aria-label') || button.textContent.trim();
@@ -351,6 +419,8 @@ try {
   result.accessibility = {
     visibleButtonsWithNames: true,
     settingsDialogLabelled: true,
+    soundPresetsPersisted: true,
+    soundBadgeOpensFocusedSettings: true,
     globalShortcutsExcludedWhileDialogOpen: true,
     quizAnswerLabelsNeutral: true,
   };
@@ -546,18 +616,30 @@ try {
   await page.locator('[data-category="middleNatural"]').click();
   await page.locator('[data-degree="2"]').click();
   await page.waitForTimeout(60);
+  const audioAfterFirstNote = await page.evaluate(() => ({ ...globalThis.__audioQa }));
   await page.locator('[data-degree="3"]').click();
   await page.waitForTimeout(60);
   const audioQa = await page.evaluate(() => globalThis.__audioQa);
   assert.equal(audioQa.contexts, 1);
-  assert.equal(audioQa.oscillators, 2);
-  assert.equal(audioQa.oscillatorStarts, 2);
-  assert.equal(audioQa.gains, 2);
-  assert.equal(audioQa.filters, 1);
-  assert.ok(audioQa.gainRamps >= 4);
+  assert.equal(audioQa.oscillators, 3);
+  assert.equal(audioQa.oscillatorStarts, 3);
+  assert.equal(audioQa.bufferSources, 1);
+  assert.equal(audioQa.waveShapers, 1);
+  assert.equal(audioQa.convolvers, 1);
+  assert.equal(audioQa.compressors, 1);
+  assert.ok(audioQa.gains >= 11);
+  assert.ok(audioQa.filters >= 7);
+  assert.ok(audioQa.buffers >= 2);
+  assert.equal(audioQa.periodicWaves, 2);
+  assert.equal(audioQa.oscillators, audioAfterFirstNote.oscillators);
+  assert.equal(audioQa.bufferSources, audioAfterFirstNote.bufferSources);
+  assert.equal(audioQa.gains, audioAfterFirstNote.gains);
+  assert.equal(audioQa.filters, audioAfterFirstNote.filters);
+  assert.ok(audioQa.gainRamps >= 12);
   result.audio = {
     ...audioQa,
     lazyContext: true,
+    spectralBrassGraph: true,
     voiceReusedAcrossTwoNotes: true,
   };
 
@@ -616,6 +698,98 @@ try {
   await serverContext.close();
   await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
 
+  // Render the procedural trumpet in Chrome's OfflineAudioContext and inspect
+  // its real signal for headroom, decay, DC safety, and dynamic brightness.
+  const audioSource = await readFile(path.join(appDir, 'src', 'audio.js'));
+  const audioServer = createServer((request, response) => {
+    if (request.url === '/audio.js') {
+      response.writeHead(200, { 'Content-Type': 'text/javascript; charset=utf-8' });
+      response.end(audioSource);
+      return;
+    }
+    response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    response.end('<!doctype html><meta charset="utf-8"><title>Audio render QA</title>');
+  });
+  await new Promise(resolve => audioServer.listen(0, '127.0.0.1', resolve));
+  const audioPort = audioServer.address().port;
+  const audioContext = await browser.newContext();
+  const audioPage = await audioContext.newPage();
+  observePage(audioPage, 'offline-audio');
+  await audioPage.goto(`http://127.0.0.1:${audioPort}/`, { waitUntil: 'load' });
+  result.audioSignal = await audioPage.evaluate(async moduleUrl => {
+    const { AudioController } = await import(moduleUrl);
+    const sampleRate = 48000;
+    const duration = 1.18;
+    const render = async (dynamics) => {
+      const offline = new OfflineAudioContext(1, Math.ceil(sampleRate * duration), sampleRate);
+      const controller = new AudioController({
+        contextFactory: () => offline,
+        setTimer: null,
+        clearTimer: null,
+      });
+      controller.context = offline;
+      const playback = controller.playWrittenMidi(60, {
+        timbre: 'concert',
+        dynamics,
+        volume: 0.16,
+      });
+      const rendered = await offline.startRendering();
+      const samples = rendered.getChannelData(0);
+      const window = (startSeconds, endSeconds) => samples.subarray(
+        Math.floor(startSeconds * sampleRate),
+        Math.floor(endSeconds * sampleRate),
+      );
+      const rms = values => Math.sqrt(
+        values.reduce((sum, value) => sum + value * value, 0) / values.length,
+      );
+      const sustain = window(0.2, 0.8);
+      let differenceEnergy = 0;
+      let peak = 0;
+      let mean = 0;
+      let onsetSample = -1;
+      for (let index = 0; index < samples.length; index += 1) {
+        const absolute = Math.abs(samples[index]);
+        peak = Math.max(peak, absolute);
+        mean += samples[index];
+        if (onsetSample < 0 && absolute > 0.005) onsetSample = index;
+      }
+      for (let index = 1; index < sustain.length; index += 1) {
+        const difference = sustain[index] - sustain[index - 1];
+        differenceEnergy += difference * difference;
+      }
+      const sustainRms = rms(sustain);
+      return {
+        ...playback,
+        peak,
+        dc: mean / samples.length,
+        onsetMs: onsetSample < 0 ? null : onsetSample / sampleRate * 1000,
+        sustainRms,
+        brightnessProxy: Math.sqrt(differenceEnergy / (sustain.length - 1)) / sustainRms,
+        tailRms: rms(window(1.1, 1.17)),
+      };
+    };
+    return {
+      sampleRate,
+      soft: await render('soft'),
+      natural: await render('natural'),
+      forte: await render('forte'),
+    };
+  }, `http://127.0.0.1:${audioPort}/audio.js`);
+  for (const profile of ['soft', 'natural', 'forte']) {
+    const metrics = result.audioSignal[profile];
+    assert.equal(metrics.ok, true);
+    assert.ok(metrics.peak > 0.01 && metrics.peak < 0.98, `${profile} peak ${metrics.peak}`);
+    assert.ok(Math.abs(metrics.dc) < 0.01, `${profile} DC ${metrics.dc}`);
+    assert.ok(metrics.onsetMs >= 0 && metrics.onsetMs < 100, `${profile} onset ${metrics.onsetMs}`);
+    assert.ok(metrics.sustainRms > 0.005, `${profile} RMS ${metrics.sustainRms}`);
+    assert.ok(metrics.tailRms < metrics.sustainRms * 0.2, `${profile} tail ${metrics.tailRms}`);
+  }
+  assert.ok(result.audioSignal.soft.sustainRms < result.audioSignal.natural.sustainRms);
+  assert.ok(result.audioSignal.natural.sustainRms < result.audioSignal.forte.sustainRms);
+  assert.ok(result.audioSignal.soft.brightnessProxy < result.audioSignal.forte.brightnessProxy);
+  await audioContext.close();
+  await new Promise((resolve, reject) => audioServer.close(error => error ? reject(error) : resolve()));
+
   assert.deepEqual(result.console.errors, []);
   assert.deepEqual(result.console.warnings, []);
   assert.deepEqual(result.console.pageErrors, []);
@@ -633,5 +807,6 @@ console.log(JSON.stringify({
   serverRequests: result.staticServer.serverRequests,
   consoleErrors: result.console.errors.length,
   consoleWarnings: result.console.warnings.length,
+  audioSignal: result.audioSignal,
   performance: result.performance,
 }, null, 2));

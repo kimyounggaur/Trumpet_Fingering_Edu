@@ -12,7 +12,13 @@ import {
   reducer,
   resolveSelection,
 } from '../src/store.js';
-import { AudioController, midiToHz, playbackMidi } from '../src/audio.js';
+import {
+  AudioController,
+  createTrumpetHarmonics,
+  midiToHz,
+  playbackMidi,
+  resolveTrumpetProfile,
+} from '../src/audio.js';
 
 test('initial state is silent-ready written C4 with the open pose', () => {
   const state = createInitialState();
@@ -22,6 +28,8 @@ test('initial state is silent-ready written C4 with the open pose', () => {
   assert.equal(state.selectedDegree, 1);
   assert.equal(state.currentMidi, 60);
   assert.equal(state.selectedAlt, null);
+  assert.equal(state.soundTimbre, 'concert');
+  assert.equal(state.soundDynamics, 'natural');
   assert.equal(currentNote(state).name, 'C4');
   assert.deepEqual(activeValves(state), []);
   assert.deepEqual(deriveState(state), {
@@ -244,7 +252,63 @@ test('audio pitch helpers preserve written pitch and lower concert playback by t
   assert.ok(Math.abs(midiToHz(60) - 261.625565) < 0.00001);
 });
 
-test('AudioController is lazy and reuses one two-oscillator voice', async () => {
+test('trumpet profiles couple dynamics to articulation and band-limit the lip-buzz spectrum', () => {
+  const soft = resolveTrumpetProfile('concert', 'soft');
+  const forte = resolveTrumpetProfile('concert', 'forte');
+  const mute = resolveTrumpetProfile('mute', 'natural');
+  const fallback = resolveTrumpetProfile('unknown', 'unknown');
+  assert.ok(soft.attack > forte.attack);
+  assert.ok(soft.level < forte.level);
+  assert.ok(soft.brightness < forte.brightness);
+  assert.ok(mute.formant1Q > soft.formant1Q);
+  assert.equal(fallback.timbre, 'concert');
+  assert.equal(fallback.dynamics, 'natural');
+
+  const low = createTrumpetHarmonics(midiToHz(54), {
+    dynamics: 'natural',
+    sampleRate: 48000,
+  });
+  const high = createTrumpetHarmonics(midiToHz(84), {
+    dynamics: 'natural',
+    sampleRate: 48000,
+  });
+  const softSpectrum = createTrumpetHarmonics(midiToHz(60), {
+    dynamics: 'soft',
+    sampleRate: 48000,
+  });
+  const forteSpectrum = createTrumpetHarmonics(midiToHz(60), {
+    dynamics: 'forte',
+    sampleRate: 48000,
+  });
+  const upperEnergy = spectrum => [...spectrum.imag]
+    .slice(8)
+    .reduce((sum, value) => sum + Math.abs(value), 0);
+
+  assert.ok(low.count > high.count);
+  assert.ok(high.count * midiToHz(84) < 48000 * 0.47);
+  assert.ok(upperEnergy(forteSpectrum) > upperEnergy(softSpectrum));
+  assert.equal(createTrumpetHarmonics(0).count, 0);
+});
+
+test('sound timbre and dynamics settings accept only supported presets', () => {
+  const initial = createInitialState();
+  const warm = reducer(initial, {
+    type: 'SET_SETTING',
+    payload: { key: 'soundTimbre', value: 'warm' },
+  });
+  const forte = reducer(warm, {
+    type: 'SET_SETTING',
+    payload: { key: 'soundDynamics', value: 'forte' },
+  });
+  assert.equal(warm.soundTimbre, 'warm');
+  assert.equal(forte.soundDynamics, 'forte');
+  assert.equal(reducer(forte, {
+    type: 'SET_SETTING',
+    payload: { key: 'soundTimbre', value: 'kazoo' },
+  }), forte);
+});
+
+test('AudioController is lazy and reuses one spectral-brass voice', async () => {
   const audioParam = (initial = 0) => ({
     value: initial,
     cancelScheduledValues() {},
@@ -254,22 +318,56 @@ test('AudioController is lazy and reuses one two-oscillator voice', async () => 
   const node = () => ({ connect() {}, disconnect() {} });
   let oscillatorCount = 0;
   let contextCreations = 0;
+  let periodicWaveCount = 0;
+  let bufferSourceCount = 0;
   const context = {
     state: 'running',
     currentTime: 0,
+    sampleRate: 48000,
     destination: {},
     createOscillator() {
       oscillatorCount += 1;
       return {
         ...node(),
         frequency: audioParam(440),
+        detune: audioParam(0),
+        setPeriodicWave() {},
         start() {},
         stop() {},
       };
     },
     createGain() { return { ...node(), gain: audioParam(0) }; },
     createBiquadFilter() {
-      return { ...node(), frequency: audioParam(0), Q: audioParam(0) };
+      return {
+        ...node(),
+        frequency: audioParam(0),
+        Q: audioParam(0),
+        gain: audioParam(0),
+      };
+    },
+    createPeriodicWave() {
+      periodicWaveCount += 1;
+      return {};
+    },
+    createBuffer(channels, length) {
+      const data = Array.from({ length: channels }, () => new Float32Array(length));
+      return { getChannelData: channel => data[channel] };
+    },
+    createBufferSource() {
+      bufferSourceCount += 1;
+      return { ...node(), start() {}, stop() {} };
+    },
+    createWaveShaper() { return node(); },
+    createConvolver() { return node(); },
+    createDynamicsCompressor() {
+      return {
+        ...node(),
+        threshold: audioParam(0),
+        knee: audioParam(0),
+        ratio: audioParam(0),
+        attack: audioParam(0),
+        release: audioParam(0),
+      };
     },
     async close() { this.state = 'closed'; },
   };
@@ -288,11 +386,27 @@ test('AudioController is lazy and reuses one two-oscillator voice', async () => 
   assert.equal(contextCreations, 1);
 
   const first = controller.playWrittenMidi(60);
-  const second = controller.playWrittenMidi(62, { pitchMode: 'concert' });
+  const second = controller.playWrittenMidi(62, {
+    pitchMode: 'concert',
+    timbre: 'warm',
+    dynamics: 'forte',
+  });
   assert.equal(first.ok, true);
+  assert.equal(first.synthesis, 'band-limited spectral brass');
+  assert.ok(first.harmonicCount > 20);
   assert.equal(second.playbackMidi, 60);
-  assert.equal(oscillatorCount, 2);
-  assert.equal(controller.activeOscillatorCount, 2);
+  assert.equal(second.timbre, 'warm');
+  assert.equal(second.dynamics, 'forte');
+  assert.equal(oscillatorCount, 3);
+  assert.equal(bufferSourceCount, 1);
+  assert.equal(periodicWaveCount, 2);
+  assert.equal(controller.activeOscillatorCount, 3);
+  controller.playWrittenMidi(62, {
+    pitchMode: 'concert',
+    timbre: 'warm',
+    dynamics: 'forte',
+  });
+  assert.equal(periodicWaveCount, 2);
 
   controller.stopImmediately();
   assert.equal(controller.activeOscillatorCount, 0);

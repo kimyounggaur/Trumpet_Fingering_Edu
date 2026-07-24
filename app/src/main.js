@@ -36,10 +36,22 @@ const CATEGORY_CONTEXTS = Object.freeze({
 const SETTINGS_FIELDS = Object.freeze({
   pitchMode: value => value === 'written' || value === 'concert',
   soundOn: value => typeof value === 'boolean',
+  soundTimbre: value => ['concert', 'warm', 'mute'].includes(value),
+  soundDynamics: value => ['soft', 'natural', 'forte'].includes(value),
   hapticOn: value => typeof value === 'boolean',
   slideMotionOn: value => typeof value === 'boolean',
   motionPreference: value => value === 'system' || value === 'reduced',
   shortcutsOn: value => typeof value === 'boolean',
+});
+const SOUND_TIMBRE_LABELS = Object.freeze({
+  concert: '콘서트 오픈',
+  warm: '웜 브라스',
+  mute: '컵 뮤트',
+});
+const SOUND_DYNAMIC_LABELS = Object.freeze({
+  soft: '부드럽게 p',
+  natural: '자연스럽게 mf',
+  forte: '힘차게 f',
 });
 const QUIZ_POOL = quizCandidates({
   octaves: ['mid', 'high'],
@@ -161,27 +173,50 @@ function targetNoteForScene(state, presentation) {
 function syncSettingsControls(state) {
   const sound = document.querySelector('#setting-sound');
   const pitch = document.querySelector('#setting-pitch');
+  const timbre = document.querySelector('#setting-timbre');
+  const dynamics = document.querySelector('#setting-dynamics');
   const haptic = document.querySelector('#setting-haptic');
   const slide = document.querySelector('#setting-slide');
   const shortcuts = document.querySelector('#setting-shortcuts');
   const motion = document.querySelector('#setting-motion');
   const mute = document.querySelector('#mute-toggle');
+  const soundProfile = document.querySelector('#sound-profile-open');
 
   sound.checked = state.soundOn;
   pitch.value = state.pitchMode;
+  timbre.value = state.soundTimbre;
+  dynamics.value = state.soundDynamics;
   haptic.checked = state.hapticOn && supportsHaptics;
   haptic.disabled = !supportsHaptics;
   slide.checked = state.slideMotionOn;
   shortcuts.checked = state.shortcutsOn;
   motion.value = state.motionPreference;
   mute.setAttribute('aria-pressed', String(!state.soundOn));
-  mute.setAttribute('aria-label', state.soundOn ? '소리 끄기' : '소리 켜기');
+  mute.setAttribute('aria-label', state.soundOn ? '출력 소리 끄기' : '출력 소리 켜기');
   mute.querySelector('span').textContent = state.soundOn ? '♪' : '×';
+  soundProfile.textContent = `${SOUND_TIMBRE_LABELS[state.soundTimbre]} · ${
+    SOUND_DYNAMIC_LABELS[state.soundDynamics].split(' ').at(-1)
+  }`;
+  soundProfile.setAttribute(
+    'aria-label',
+    `트럼펫 음색 설정 열기, 현재 ${SOUND_TIMBRE_LABELS[state.soundTimbre]}, ${
+      SOUND_DYNAMIC_LABELS[state.soundDynamics]
+    }`,
+  );
 
   if (!supportsHaptics) {
     const hint = haptic.closest('label')?.querySelector('small');
     if (hint) hint.textContent = '이 브라우저에서는 진동을 지원하지 않습니다.';
   }
+}
+
+function playbackOptions(state) {
+  return {
+    pitchMode: state.pitchMode,
+    soundOn: state.soundOn,
+    timbre: state.soundTimbre,
+    dynamics: state.soundDynamics,
+  };
 }
 
 function render(state, { animate = true } = {}) {
@@ -210,10 +245,7 @@ function playNoteFromActivation(note, source, { vibrate = true } = {}) {
   const state = store.getState();
   if (vibrate) vibrateIfPointer(source);
   if (!state.soundOn) return;
-  void audio.playFromGesture(note.midi, {
-    pitchMode: state.pitchMode,
-    soundOn: state.soundOn,
-  });
+  void audio.playFromGesture(note.midi, playbackOptions(state));
 }
 
 function announceCurrentSelection() {
@@ -447,10 +479,7 @@ async function runScaleDemo(source) {
     if (resolved.ok) {
       store.dispatch(resolved.action);
       const current = store.getState();
-      audio.playWrittenMidi(resolved.note.midi, {
-        pitchMode: current.pitchMode,
-        soundOn: current.soundOn,
-      });
+      audio.playWrittenMidi(resolved.note.midi, playbackOptions(current));
     }
     if (!(await waitForDemo(420, revision))) return;
   }
@@ -564,6 +593,9 @@ document.addEventListener('click', event => {
     ui.announce(value ? '소리를 켰습니다.' : '소리를 껐습니다.');
   } else if (button.id === 'settings-open') {
     openDialog('settings-dialog');
+  } else if (button.id === 'sound-profile-open') {
+    openDialog('settings-dialog');
+    document.querySelector('#setting-timbre')?.focus();
   } else if (button.id === 'help-open') {
     openDialog('help-dialog');
   }
@@ -574,6 +606,8 @@ document.addEventListener('change', event => {
   const mapping = {
     'setting-sound': ['soundOn', control.checked],
     'setting-pitch': ['pitchMode', control.value],
+    'setting-timbre': ['soundTimbre', control.value],
+    'setting-dynamics': ['soundDynamics', control.value],
     'setting-haptic': ['hapticOn', control.checked],
     'setting-slide': ['slideMotionOn', control.checked],
     'setting-motion': ['motionPreference', control.value],
@@ -588,6 +622,15 @@ document.addEventListener('change', event => {
   if (!setting) return;
   store.dispatch({ type: 'SET_SETTING', payload: { key: setting[0], value: setting[1] } });
   if (setting[0] === 'soundOn' && !setting[1]) audio.release();
+  if (['soundTimbre', 'soundDynamics'].includes(setting[0])) {
+    const state = store.getState();
+    if (!state.mode.startsWith('quiz-')) {
+      playNoteFromActivation(currentNote(state), 'screen', { vibrate: false });
+    }
+    ui.announce(`${SOUND_TIMBRE_LABELS[state.soundTimbre]}, ${
+      SOUND_DYNAMIC_LABELS[state.soundDynamics]
+    } 음색으로 변경했습니다.`);
+  }
 });
 
 for (const dialog of document.querySelectorAll('dialog')) {

@@ -1,7 +1,7 @@
 {
   "browser": {
     "name": "chromium",
-    "version": "150.0.7871.128",
+    "version": "150.0.7871.182",
     "platform": "win32",
     "arch": "x64"
   },
@@ -43,6 +43,8 @@
   "accessibility": {
     "visibleButtonsWithNames": true,
     "settingsDialogLabelled": true,
+    "soundPresetsPersisted": true,
+    "soundBadgeOpensFocusedSettings": true,
     "globalShortcutsExcludedWhileDialogOpen": true,
     "quizAnswerLabelsNeutral": true,
     "forcedColorsRendered": true,
@@ -51,74 +53,74 @@
   "poses": {
     "100": {
       "gapsScreenPx": {
-        "1": 0.00024461699740419614,
+        "1": 0.00023090737839388359,
         "2": 0.00004825252777356536,
         "3": 0.000030517578125
       },
-      "maximumGap": 0.00024461699740419614,
+      "maximumGap": 0.00023090737839388359,
       "screenshot": ".qa-artifacts\\poses\\pose-100-390x844.png"
     },
     "101": {
       "gapsScreenPx": {
         "1": 0.00006291359902370698,
         "2": 0.00003411968959808029,
-        "3": 0.0002899169921875
+        "3": 0.00030669786441408966
       },
-      "maximumGap": 0.0002899169921875,
+      "maximumGap": 0.00030669786441408966,
       "screenshot": ".qa-artifacts\\poses\\pose-101-390x844.png"
     },
     "110": {
       "gapsScreenPx": {
-        "1": 0.00015728399755926745,
-        "2": 0.00024944736822924524,
+        "1": 0.0001983642578125,
+        "2": 0.0002903182615728828,
         "3": 0.000030517578125
       },
-      "maximumGap": 0.00024944736822924524,
+      "maximumGap": 0.0002903182615728828,
       "screenshot": ".qa-artifacts\\poses\\pose-110-390x844.png"
     },
     "111": {
       "gapsScreenPx": {
-        "1": 0.00017059844799040142,
+        "1": 0.00020069803524728246,
         "2": 0.00009650505554713072,
         "3": 0.00003411968959808029
       },
-      "maximumGap": 0.00017059844799040142,
+      "maximumGap": 0.00020069803524728246,
       "screenshot": ".qa-artifacts\\poses\\pose-111-390x844.png"
     },
     "000": {
       "gapsScreenPx": {
         "1": 0.000017059844799040144,
-        "2": 0.0001406790841261732,
+        "2": 0.000027508173183166424,
         "3": 0.000030517578125
       },
-      "maximumGap": 0.0001406790841261732,
+      "maximumGap": 0.000030517578125,
       "screenshot": ".qa-artifacts\\poses\\pose-000-390x844.png"
     },
     "010": {
       "gapsScreenPx": {
         "1": 0.000017059844799040144,
-        "2": 0.000335693359375,
+        "2": 0.0003826884827876115,
         "3": 0.000030517578125
       },
-      "maximumGap": 0.000335693359375,
+      "maximumGap": 0.0003826884827876115,
       "screenshot": ".qa-artifacts\\poses\\pose-010-390x844.png"
     },
     "001": {
       "gapsScreenPx": {
         "1": 0.00003411968959808029,
         "2": 0.00003411968959808029,
-        "3": 0.0003370776677608417
+        "3": 0.00034119689598080283
       },
-      "maximumGap": 0.0003370776677608417,
+      "maximumGap": 0.00034119689598080283,
       "screenshot": ".qa-artifacts\\poses\\pose-001-390x844.png"
     },
     "011": {
       "gapsScreenPx": {
         "1": 0.00003411968959808029,
-        "2": 0.00031861286953462374,
+        "2": 0.00028135816825234646,
         "3": 0.00003411968959808029
       },
-      "maximumGap": 0.00031861286953462374,
+      "maximumGap": 0.00028135816825234646,
       "screenshot": ".qa-artifacts\\poses\\pose-011-390x844.png"
     }
   },
@@ -198,48 +200,102 @@
   },
   "touch": {
     "oneTapOneSelection": true,
-    "latencyMs": 43
+    "latencyMs": 66
   },
   "performance": {
     "samples": [
       {
-        "durationMs": 10013,
+        "durationMs": 10005.099999904633,
         "transitions": 41,
-        "frames": 1394,
-        "averageFps": 139.32476462710133,
-        "p95IntervalMs": 7.200000000000728,
-        "maximumIntervalMs": 14.200000000000728,
+        "frames": 1430,
+        "averageFps": 143.02574463403417,
+        "p95IntervalMs": 7.099999999998545,
+        "maximumIntervalMs": 14,
         "longTasksOver50Ms": 0
       },
       {
-        "durationMs": 10004.900000035763,
+        "durationMs": 10003.100000023842,
         "transitions": 41,
-        "frames": 1394,
-        "averageFps": 139.42509651737316,
-        "p95IntervalMs": 7.200000000004366,
-        "maximumIntervalMs": 14.099999999998545,
+        "frames": 1419,
+        "averageFps": 141.92554659838768,
+        "p95IntervalMs": 7.099999999998545,
+        "maximumIntervalMs": 20.799999999995634,
         "longTasksOver50Ms": 0
       },
       {
-        "durationMs": 10007.300000011921,
+        "durationMs": 10003.600000023842,
         "transitions": 41,
-        "frames": 1394,
-        "averageFps": 139.3261571367176,
-        "p95IntervalMs": 7.200000000004366,
+        "frames": 1427,
+        "averageFps": 142.7256906243123,
+        "p95IntervalMs": 7.099999999998545,
         "maximumIntervalMs": 14,
         "longTasksOver50Ms": 0
       }
     ],
-    "medianAverageFps": 139.3261571367176,
-    "medianP95IntervalMs": 7.200000000004366,
+    "medianAverageFps": 142.7256906243123,
+    "medianP95IntervalMs": 7.099999999998545,
     "medianLongTasksOver50Ms": 0,
     "viewport": "390x844",
     "runs": 3,
     "durationPerRunSeconds": 10,
-    "inputToLogicalMs": 0.699999988079071,
-    "inputToFirstVisualMs": 8.400000035762787,
+    "inputToLogicalMs": 0.6999999284744263,
+    "inputToFirstVisualMs": 4.899999976158142,
     "sceneNodes": 167,
     "movingTopLevelNodes": 5
+  },
+  "audioSignal": {
+    "sampleRate": 48000,
+    "soft": {
+      "ok": true,
+      "synthesis": "band-limited spectral brass",
+      "writtenMidi": 60,
+      "playbackMidi": 60,
+      "frequency": 261.6255653005986,
+      "timbre": "concert",
+      "dynamics": "soft",
+      "harmonicCount": 40,
+      "duration": 1.06,
+      "peak": 0.10892519354820251,
+      "dc": -2.352769604659932e-7,
+      "onsetMs": 14.125,
+      "sustainRms": 0.042925736625604845,
+      "brightnessProxy": 0.0801266084564039,
+      "tailRms": 0.00011486513585683829
+    },
+    "natural": {
+      "ok": true,
+      "synthesis": "band-limited spectral brass",
+      "writtenMidi": 60,
+      "playbackMidi": 60,
+      "frequency": 261.6255653005986,
+      "timbre": "concert",
+      "dynamics": "natural",
+      "harmonicCount": 40,
+      "duration": 1.045,
+      "peak": 0.15558040142059326,
+      "dc": -4.0612546540706266e-7,
+      "onsetMs": 11.5625,
+      "sustainRms": 0.05017038933740758,
+      "brightnessProxy": 0.1225205185446486,
+      "tailRms": 0.00013676827536896778
+    },
+    "forte": {
+      "ok": true,
+      "synthesis": "band-limited spectral brass",
+      "writtenMidi": 60,
+      "playbackMidi": 60,
+      "frequency": 261.6255653005986,
+      "timbre": "concert",
+      "dynamics": "forte",
+      "harmonicCount": 40,
+      "duration": 1.03,
+      "peak": 0.20340049266815186,
+      "dc": -6.67787779604753e-8,
+      "onsetMs": 10.5,
+      "sustainRms": 0.056696854629239735,
+      "brightnessProxy": 0.17838697730762446,
+      "tailRms": 0.00014199616577474308
+    }
   },
   "console": {
     "errors": [],
@@ -248,12 +304,19 @@
   },
   "audio": {
     "contexts": 1,
-    "oscillators": 2,
-    "gains": 2,
-    "filters": 1,
-    "oscillatorStarts": 2,
-    "gainRamps": 5,
+    "oscillators": 3,
+    "gains": 11,
+    "filters": 7,
+    "bufferSources": 1,
+    "buffers": 2,
+    "periodicWaves": 2,
+    "waveShapers": 1,
+    "convolvers": 1,
+    "compressors": 1,
+    "oscillatorStarts": 3,
+    "gainRamps": 31,
     "lazyContext": true,
+    "spectralBrassGraph": true,
     "voiceReusedAcrossTwoNotes": true
   }
 }

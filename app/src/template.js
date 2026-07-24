@@ -8,7 +8,7 @@ export const APP_HTML = String.raw`
       <p>계이름을 고르면 손가락과 피스톤이 함께 움직여요.</p>
     </div>
     <div class="header-actions" aria-label="빠른 설정">
-      <button class="icon-button" id="mute-toggle" type="button" aria-pressed="false" aria-label="소리 끄기"><span aria-hidden="true">♪</span></button>
+      <button class="icon-button" id="mute-toggle" type="button" aria-pressed="false" aria-label="출력 소리 끄기"><span aria-hidden="true">♪</span></button>
       <button class="icon-button" id="help-open" type="button" aria-label="단축키 도움말"><span aria-hidden="true">?</span></button>
       <button class="icon-button" id="settings-open" type="button" aria-label="설정 열기"><span aria-hidden="true">⚙</span></button>
     </div>
@@ -19,6 +19,7 @@ export const APP_HTML = String.raw`
       <div class="eyebrow-row">
         <span class="category-badge" id="category-badge">낮은 계이름 · C4–C5</span>
         <span class="mode-badge" id="mode-badge">배우기</span>
+        <button class="sound-badge" id="sound-profile-open" type="button" aria-label="트럼펫 음색 설정 열기, 현재 콘서트 오픈, 자연스럽게 mf">콘서트 오픈 · mf</button>
       </div>
       <div class="note-heading">
         <span class="degree-orb" id="degree-display" aria-hidden="true">1</span>
@@ -34,7 +35,7 @@ export const APP_HTML = String.raw`
       <div><dt>포즈</dt><dd id="pose-text"><code>000</code></dd></div>
     </dl>
     <div class="current-actions">
-      <button type="button" id="replay-audio"><span aria-hidden="true">♪</span> 다시 듣기</button>
+      <button type="button" id="replay-audio"><span aria-hidden="true">♪</span> 트럼펫 듣기</button>
       <button type="button" id="replay-motion"><span aria-hidden="true">↻</span> 동작 다시 보기</button>
     </div>
   </section>
@@ -134,13 +135,16 @@ export const APP_HTML = String.raw`
   <form method="dialog" class="dialog-card">
     <div class="dialog-heading"><div><span class="section-kicker">SETTINGS</span><h2 id="settings-title">학습 설정</h2></div><button class="dialog-close" value="close" aria-label="설정 닫기">×</button></div>
     <div class="settings-list">
-      <label><span><b>소리</b><small>참고 음높이 재생</small></span><input id="setting-sound" type="checkbox" checked></label>
+      <label><span><b>출력 소리</b><small>고품질 트럼펫 합성음 재생</small></span><input id="setting-sound" type="checkbox" checked></label>
       <label><span><b>재생 음높이</b><small>기보음 또는 B♭ 실음</small></span><select id="setting-pitch"><option value="written">기보음</option><option value="concert">B♭ 실음</option></select></label>
+      <label><span><b>트럼펫 음색</b><small>오픈 벨·따뜻한 브라스·컵 약음기</small></span><select id="setting-timbre"><option value="concert">콘서트 오픈</option><option value="warm">웜 브라스</option><option value="mute">컵 뮤트</option></select></label>
+      <label><span><b>연주 다이내믹</b><small>음량·어택·배음 밝기를 함께 조절</small></span><select id="setting-dynamics"><option value="soft">부드럽게 p</option><option value="natural">자연스럽게 mf</option><option value="forte">힘차게 f</option></select></label>
       <label><span><b>터치 진동</b><small>지원 기기에서 10ms</small></span><input id="setting-haptic" type="checkbox" checked></label>
       <label><span><b>3번 슬라이드</b><small>저음 1-3 운지 보정 시연</small></span><input id="setting-slide" type="checkbox"></label>
       <label><span><b>키보드 단축키</b><small>숫자·Ctrl·Shift·Alt</small></span><input id="setting-shortcuts" type="checkbox" checked></label>
       <label><span><b>모션 줄이기</b><small>시스템 설정보다 더 줄일 수 있어요</small></span><select id="setting-motion"><option value="system">시스템 설정</option><option value="reduced">항상 줄이기</option></select></label>
     </div>
+    <p class="audio-engine-note"><strong>실시간 트럼펫 엔진</strong> 입술 버즈 배음, 텅잉 어택, 브레스, 벨 포먼트, 지연 비브라토와 짧은 룸 반사를 외부 음원 없이 합성합니다.</p>
     <button class="primary-action" value="close">완료</button>
   </form>
 </dialog>

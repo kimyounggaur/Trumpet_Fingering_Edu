@@ -2,13 +2,13 @@
 
 ## 릴리스 요약
 
-- 검증 일시: 2026-07-20 (Asia/Seoul)
+- 검증 일시: 2026-07-24 (Asia/Seoul)
 - 최종 실행본: `app/index.html`
-- 빌드 SHA-256: `b08755d4d1d8f853e54daeb5543ffe004a16dd44c37898fffc9dfec0b0cc7029`
-- 최종 크기: 113,273 bytes / 358,400 bytes(350KB), 예산 사용률 31.6%
+- 빌드 SHA-256: `cc1e146e8d617b027610c8b8a969d62d0c79c92b62b23110f79978202be5a606`
+- 최종 크기: 124,053 bytes / 358,400 bytes(350KB), 예산 사용률 34.6%
 - 자동 QA: `npm.cmd run qa` 종료 코드 0
-- 단위 테스트: 51 통과, 0 실패
-- 실제 브라우저: Google Chrome 150.0.7871.128, Windows 11 Pro 64-bit
+- 단위 테스트: 53 통과, 0 실패
+- 실제 브라우저: Google Chrome 150.0.7871.182, Windows 11 Pro 64-bit
 - 측정 장치: 12th Gen Intel(R) Core(TM) i7-1280P, CPU throttling OFF
 - 외부 런타임 자산: 0
 - 콘솔: error 0, warning 0, pageerror 0
@@ -67,15 +67,15 @@
 
 - 변경: Ctrl/Shift/Alt exact-one, Meta/AltGraph/IME/editable/dialog/repeat/held 제외, `Space`, `R`, 화살표, `S`, pointer provenance와 10ms 햅틱을 구현했다.
 - 명령: 단축키 24문맥 단위 테스트, 합성 DOM keydown 통합 검사, hasTouch Chrome tap 검사.
-- 실제 결과: 허용·잠금·비활성 입력만 `preventDefault`; 나머지는 브라우저 기본 동작 유지. 한 번 탭→한 번 선택, 측정 지연 45ms. 키보드·assistive 합성 click에서는 햅틱을 실행하지 않는다.
+- 실제 결과: 허용·잠금·비활성 입력만 `preventDefault`; 나머지는 브라우저 기본 동작 유지. 한 번 탭→한 번 선택, 측정 지연 71ms. 키보드·assistive 합성 click에서는 햅틱을 실행하지 않는다.
 - 남은 위험: 실제 브라우저가 `Ctrl+숫자`를 탭 전환으로 먼저 소비할 수 있다. 동일 기능의 화면 분류·숫자 버튼을 8포즈 매트릭스에서 검증했다.
 
 ### 단계 7 — 오디오·햅틱
 
-- 변경: lazy Web Audio, 기보음/실음(−2 semitone), 단일 2-oscillator voice, filter·gain envelope·release와 포인터 전용 햅틱을 구현했다.
-- 명령: audio 단위 테스트와 실제 Chrome Web Audio 계측.
-- 실제 결과: 사용자 활성화 전 context 0, 이후 context 1, oscillator 2, gain 2, filter 1, oscillator start 2. 연속 두 음에서도 oscillator 수가 늘지 않았고 gain ramp 5회를 확인했다. 지원하지 않는 햅틱은 설정에서 비활성 안내한다.
-- 남은 위험: 헤드리스 환경에서는 스피커의 실제 음색·음량을 청음하지 않았다.
+- 변경: lazy Web Audio, 기보음/실음(−2 semitone), band-limited lip-buzz `PeriodicWave`, 기본음 바디, 텅잉·브레스 노이즈, 동적 밝기 필터, 700Hz/6kHz 포먼트, 소프트 포화, 지연 비브라토, 절차적 룸 반사와 보호용 컴프레서를 구현했다. 콘서트 오픈·웜 브라스·컵 뮤트와 p·mf·f를 설정·저장할 수 있다.
+- 명령: audio 단위 테스트, 실제 Chrome Web Audio 노드 계측, `OfflineAudioContext` 파형 렌더 검사.
+- 실제 결과: 사용자 활성화 전 context 0, 이후 context 1, oscillator 3, gain 11, filter 7, noise source 1, `PeriodicWave` 2, waveshaper/convolver/compressor 각 1. 연속 두 음에서도 음성 노드 수가 늘지 않았다. C4 p/mf/f의 peak는 0.109/0.156/0.203, sustain RMS는 0.0429/0.0502/0.0567, brightness proxy는 0.0801/0.1225/0.1784였다. DC 절댓값은 모두 0.000001 미만이고 릴리스 꼬리는 지속 RMS의 1% 미만이다.
+- 남은 위험: 헤드리스 환경에서는 실제 휴대폰 스피커·헤드폰의 음색과 음량을 청음하지 않았다.
 
 ### 단계 8 — 학습 모드
 
@@ -100,7 +100,7 @@
 
 - 변경: ES 모듈·CSS·SVG를 classic inline script/style/SVG로 묶는 재현 가능한 단일 파일 빌드를 만들었다.
 - 명령: `npm.cmd run qa`
-- 실제 결과: 전체 체인 종료 코드 0. 113,273 bytes, ID 75개, 중복 0, fragment 27개/깨짐 0, 외부 리소스 0. `file://` 서브리소스 0·외부 요청 0, 정적 서버는 `/index.html` 문서 1건만 요청. 콘솔 error/warning/pageerror 모두 0.
+- 실제 결과: 전체 체인 종료 코드 0. 124,053 bytes, ID 78개, 중복 0, fragment 27개/깨짐 0, 외부 리소스 0. `file://` 서브리소스 0·외부 요청 0, 정적 서버는 `/index.html` 문서 1건만 요청. 콘솔 error/warning/pageerror 모두 0.
 - 남은 위험: 없음. 단, 위의 실제 기기·스크린리더 미실행 항목은 환경 제약으로 남는다.
 
 ## 요구사항–증거 추적표
@@ -113,10 +113,11 @@
 | 8개 운지 포즈 | `scene.test.mjs`, 8/8 contact 검사 | `.qa-artifacts/poses/pose-*.png` 8장 | 통과 |
 | 손가락–피스톤 동기화 | shared `p`, 65 samples, rapid-retarget | `000↔111`, `101↔011` 3×10초 관찰 | 통과 |
 | 4개 학습 모드 | 단위 상태 머신 + 10문제×2 E2E | 퀴즈 hidden/candidate/완료 캡처 | 통과 |
+| 고품질 트럼펫 합성음 | 배음·프리셋 단위 테스트, 실제 노드 수명, 오프라인 파형 peak/RMS/DC/decay | 3음색·3다이내믹 설정과 현재 음 미리 듣기 | 통과(실기기 청음 제외) |
 | 접근성 | 이름·dialog·키보드·forced-colors 검사 | reduced/forced-colors 캡처 | 조건부 통과(실제 SR 미실행) |
 | 8개 뷰포트 | overflow 0, scene clipping 0, 상태 유지 8/8 | `.qa-artifacts/viewports/viewport-*.png` 8장 | 통과 |
 | 오프라인 배포 | validator, file 서브리소스 0, server 1문서 | file://·정적 서버 실제 렌더 | 통과 |
-| 릴리스 품질 | 113,273 bytes, console 0/0, ID·참조 0오류 | 최종 캡처 직접 비교 | 통과 |
+| 릴리스 품질 | 124,053 bytes, console 0/0, ID·참조 0오류 | 최종 캡처 직접 비교 | 통과 |
 
 ## 성능 측정
 
@@ -124,13 +125,13 @@
 
 | 회차 | 평균 FPS | rAF p95 | 최대 간격 | 50ms 초과 Long Task |
 |---:|---:|---:|---:|---:|
-| 1 | 139.52 | 7.2ms | 14.2ms | 0 |
-| 2 | 140.52 | 7.2ms | 14.0ms | 0 |
-| 3 | 136.92 | 13.3ms | 14.2ms | 0 |
-| 중앙값 | 139.52 | 7.2ms | — | 0 |
+| 1 | 141.73 | 7.1ms | 14.0ms | 0 |
+| 2 | 141.33 | 7.1ms | 13.9ms | 0 |
+| 3 | 142.13 | 7.1ms | 14.1ms | 0 |
+| 중앙값 | 141.73 | 7.1ms | — | 0 |
 
-- 입력→논리 상태: 0.5ms
-- 입력→첫 시각 변화: 4.0ms
+- 입력→논리 상태: 0.6ms
+- 입력→첫 시각 변화: 5.5ms
 - 장면 DOM: 167 nodes
 - 움직이는 상위 노드: 5
 
